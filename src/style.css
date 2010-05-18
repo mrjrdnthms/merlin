@@ -1,0 +1,43 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+
+
+	
+.MenuTitle
+{
+	fontFamily: Georgia;
+	fontSize: 24;
+}
+.LegendTitle
+{
+	fontFamily: Georgia;
+}
+.subMenuPreview
+{
+	color: #6E6E6E;
+	fontFamily: Georgia;
+	fontSize: 12;
+}
+.menu
+{
+	backgroundAlpha: 0.0;
+	backgroundColor: #02509d;
+	paddingBottom: 5;
+	paddingLeft: 5;
+	paddingRight: 5;
+	paddingTop: 5;
+}
+.viewSwitchTitle
+{
+	fontFamily: Georgia;
+	fontSize: 18;
+	color: #555555;
+}
+	
+.uiHover
+{
+	background-alpha:.5;
+	background-color:blue;
+}

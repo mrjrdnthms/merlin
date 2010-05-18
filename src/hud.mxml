@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 creationComplete="init()" currentState="simpleSearch" xmlns:local="*">
+	<fx:Script>        
+		<![CDATA[
+			import flashx.textLayout.formats.BackgroundColor;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.ArrayList;
+			import mx.collections.IList;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			
+			import org.AppEvent;
+			
+			import skins.revealButton;
+			
+			private var subMenuPreviewTimer:Timer = new Timer(2000);
+			
+			[Bindable]
+			private var HUDVisible:Boolean = false;
+			
+			[Bindable]
+			private var menu1Items:ArrayCollection = new ArrayCollection([{name:'Print Map',icon:'print.png',description:'Print Image of Map on Screen'},{name:'Email Map',icon:'email.png',description:'Email Link that will send people to this map'},{name:'Link to Map',icon:'link.png',description:'Generate link to copy/paste that will send people to the map as it\'s shown'}]);
+			[Bindable]
+			private var menu2Items:ArrayCollection = new ArrayCollection([
+				{name:'Zoom In',icon:'zoomIn.png',description:'You can also use the scroll wheel on your mouse'},
+				{name:'Zoom Out',icon:'zoomOut.png',description:'You can also use the scroll wheel on your mouse'},
+				{name:'Reset Map',icon:'resetMap.png',description:'Reset map to original extent'},
+				{name:'Previous Extent',icon:'previousExtent.png',description:'Zoom back to previous extent'},
+				{name:'Next Extent',icon:'nextExtent.png',description:'Zoom to next extent'},
+				{name:'Re-Center Map',icon:'pan.png',description:'Click and drag map to move around'}]);
+			[Bindable]
+			private var menu3Items:ArrayCollection = new ArrayCollection([
+				{name:'Zoom In',icon:'zoomIn.png',description:'You can also use the scroll wheel on your mouse'},
+				{name:'Zoom Out',icon:'zoomOut.png',description:'You can also use the scroll wheel on your mouse'},
+				{name:'Reset Map',icon:'resetMap.png',description:'Reset map to original extent'},
+				{name:'Previous Extent',icon:'previousExtent.png',description:'Zoom back to previous extent'},
+				{name:'Next Extent',icon:'nextExtent.png',description:'Zoom to next extent'},
+				{name:'Re-Center Map',icon:'pan.png',description:'Click and drag map to move around'}]);
+			[Bindable]
+			private var menu4Items:ArrayCollection = new ArrayCollection([
+				{name:'Zoom In',icon:'zoomIn.png',description:'You can also use the scroll wheel on your mouse'},
+				{name:'Zoom Out',icon:'zoomOut.png',description:'You can also use the scroll wheel on your mouse'},
+				{name:'Reset Map',icon:'resetMap.png',description:'Reset map to original extent'},
+				{name:'Previous Extent',icon:'previousExtent.png',description:'Zoom back to previous extent'},
+				{name:'Next Extent',icon:'nextExtent.png',description:'Zoom to next extent'},
+				{name:'Re-Center Map',icon:'pan.png',description:'Click and drag map to move around'}]);
+			
+			[Bindable]
+			private var searchList:ArrayCollection = new ArrayCollection([
+				{name:'Zoom In',icon:'zoomIn.png',description:'You can also use the scroll wheel on your mouse'},
+				{name:'Zoom Out',icon:'zoomOut.png',description:'You can also use the scroll wheel on your mouse'},
+				{name:'Re-Center Map',icon:'pan.png',description:'Click and drag map to move around'}]);
+			
+			private function init():void{
+				this.addEventListener(AppEvent.SHOWHUD,HUD_showHandler);
+				this.addEventListener(AppEvent.HIDEHUD,HUD_hideHandler);
+			}
+			
+			protected function HUD_showHandler(event:FlexEvent):void
+			{
+				subMenuPreviewTimer.addEventListener(TimerEvent.TIMER,subMenuPreviewTimerHandler);
+				subMenuPreviewTimer.start();
+				menu1Preview.visible=false;
+				HUDVisible=true;
+			}
+			
+			protected function HUD_hideHandler(event:FlexEvent):void
+			{
+				subMenuPreviewTimer.stop();
+				HUDVisible=false;
+			}
+			
+			public function subMenuPreviewTimerHandler(event:TimerEvent):void {
+				if(HUDVisible){
+					var count:int = event.target.currentCount;
+					while (count>=menu1Items.length){
+						count=count-menu1Items.length;
+					}
+					menu1Preview.text=menu1Items[count].name;
+					menu1Preview.visible=true;
+					menu1Preview.visible=false;
+				}
+			}
+			
+			protected function menu_rollOverHandler(event:MouseEvent):void
+			{
+				menuPane.visible=true;
+				menuData.dataProvider = null;
+				switch (event.target.name){
+					case 'menu1Items':
+						menuData.dataProvider = menu1Items;
+						break;
+					case 'menu2Items':
+						menuData.dataProvider = menu2Items;
+						break;
+					case 'menu3Items':
+						menuData.dataProvider = menu3Items;
+						break;
+					case 'menu4Items':
+						menuData.dataProvider = menu4Items;
+						break;
+				}
+				moveMenu.xTo = event.target.x;
+			}
+			
+			protected function setYpostion():void{
+				var y:int = FlexGlobals.topLevelApplication.height-menuPane.height-10
+				moveMenu.yTo = y;
+				moveMenu.play([menuPane]);
+			}
+			
+			
+			protected function menu_rollOutHandler(event:MouseEvent):void
+			{
+				moveMenu.yTo = 3000;
+				moveMenu.play([menuPane]);
+				menuPane.visible=false;
+			}
+
+			protected function advancedSearchIcon_clickHandler(event:MouseEvent):void
+			{
+				if(this.currentState!='advancedSearch'){
+					this.currentState='advancedSearch'
+				}
+				else{
+					this.currentState='simpleSearch'
+				}
+			}
+
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:Move id="moveMenu" duration="400"/>
+	</fx:Declarations>
+	
+	<s:states>
+		<s:State name="simpleSearch"/>
+		<s:State name="advancedSearch"/>
+	</s:states> 
+	
+	<!-- Define the transition to animate the change of view state. -->
+	<s:transitions>
+		<mx:Transition toState="advancedSearch">
+			<s:Animate target="{topHUD}" duration="200">
+				<s:SimpleMotionPath property="height" />
+			</s:Animate>
+		</mx:Transition>
+		<mx:Transition fromState="advancedSearch">
+			<s:Animate target="{topHUD}" duration="200" >
+				<s:SimpleMotionPath property="height" />
+			</s:Animate>
+		</mx:Transition>
+	</s:transitions>
+	
+	<mx:VBox id="topHUD"
+			 width="100%" height="75" height.advancedSearch="200" x="0" y="0"
+			 backgroundColor="#ffffff" backgroundAlpha=".75"
+			 paddingBottom="5" dropShadowVisible="true">
+		<s:Group width="100%" height="10">
+			<s:Rect id="backgroundRect" height="100%" width="100%" alpha=".5">
+				<s:fill>
+					<s:LinearGradient rotation="0">
+						<s:GradientEntry color="#b51334" />
+						<s:GradientEntry color="#ff9a15" />
+						<s:GradientEntry color="#ffea0c" />
+						<s:GradientEntry color="#1583ff" />
+						<s:GradientEntry color="#6db2ff" />
+						<s:GradientEntry color="#cae3ff" />
+						<s:GradientEntry color="#e5f1ff" />
+					</s:LinearGradient>
+				</s:fill>
+			</s:Rect>
+		</s:Group>
+		<s:HGroup>
+			<s:Group id="seachBox" width="100%" height="100%">
+				<mx:HBox x="250" y="7" height="30" width="100%"
+						 visible.simpleSearch="false" verticalAlign="middle">
+					<s:Label text="Match"/>
+					<s:ComboBox id="globaloperator" selectedIndex="0" width="70"
+								dataProvider="{new ArrayCollection(['all','any'])}"/>
+					<s:Label text="of the following rules"/>
+				</mx:HBox>
+				<mx:HBox id="simpleSearch" verticalAlign="middle"
+						 width="100%" height="40" paddingLeft="5">
+					<mx:Image source="@Embed(source='images/logo.png')" useHandCursor="true" buttonMode="true"/>
+					<mx:TextInput width="300" height="30" borderColor="#828282" fontSize="14" visible.advancedSearch="false"/>
+					<mx:Image id="searchIcon" source="@Embed(source='images/search.png')" scaleContent="true" width="24" height="24"
+							  alpha=".5" mouseOver="searchIcon.alpha=1" mouseOut="searchIcon.alpha=.5"/>
+					<mx:VRule width="1" height="30" chromeColor="#CCCCCC"/>
+					<s:Button id="advancedSearchIcon" height="25" skinClass="skins.revealButton" label="Advanced Search"
+							  click="advancedSearchIcon_clickHandler(event)"/>
+				</mx:HBox>
+				<mx:VBox id="advancedSearch"
+						 height="100%" y="40"
+						 visible.simpleSearch="false" width="100%"
+						 paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+					<mx:HBox height="100%" width="100%" top="10" left="10" right="10" bottom="10"
+							 visible.simpleSearch="false" borderColor="#666666" borderAlpha="1" cornerRadius="5"
+							 backgroundAlpha="0" backgroundColor="red">
+						<s:DataGroup id="searchDataGroup" dataProvider="{searchList}">
+							<s:layout>
+								<s:VerticalLayout gap="0" useVirtualLayout="true"/>
+							</s:layout>
+							<s:itemRenderer>
+								<fx:Component>
+									<s:ItemRenderer autoDrawBackground="false">
+										<s:states>
+											<s:State name="normal" />
+										</s:states>
+										
+										<fx:Script>
+											<![CDATA[
+												import mx.collections.ArrayCollection;
+												override public function set data(value:Object):void {
+													super.data = value;
+													
+													if (data == null) // a renderer's data is set to null when it goes out of view
+														return;
+													
+													//subMenuItemName.text = data.name;
+													//subMenuItemDescription.text = data.description;
+													//subMenuItemIcon.source = 'images/' + data.icon;
+												}
+											]]>
+										</fx:Script>
+										
+										<mx:HBox id="query" verticalAlign="middle" width="100%" height="40"
+												 backgroundColor="red" backgroundAlpha="0">
+											<s:Label text="Search in"/>
+											<s:ComboBox id="layers" selectedIndex="0" 
+														dataProvider="{new ArrayCollection(['ALL LAYERS','Layer1'])}"/>
+											<s:Label text="in"/>
+											<s:ComboBox id="fields" selectedIndex="0" 
+														dataProvider="{new ArrayCollection(['ALL FIELDS','field1'])}"/>
+											<s:Label text="that"/>
+											<s:ComboBox id="operator" 
+														selectedIndex="0" dataProvider="{new ArrayCollection(['Contain','Doesn\'t Contain','Is','Is not','is Greater Than'])}"/>
+											<mx:TextInput width="300" height="20" borderColor="#828282" fontSize="12"/>
+											<s:Button label="+" width="25" fontSize="10"/>
+											<s:Button label="-" width="25" fontSize="10"/>
+										</mx:HBox>
+									</s:ItemRenderer>
+								</fx:Component>
+							</s:itemRenderer>
+						</s:DataGroup>
+					</mx:HBox>
+				</mx:VBox>
+			</s:Group>
+			<local:viewSwitcher/>
+		</s:HGroup>
+	</mx:VBox>
+	<mx:HBox id="bottomHUD"
+			 width="100%" height="75" x="0" bottom="0"
+			 horizontalAlign="center" verticalAlign="middle"
+			 backgroundColor="#ffffff" backgroundAlpha=".9" dropShadowVisible="true">
+		<mx:Spacer width="100%"/>
+		<mx:HBox id="menu1" name="menu1Items" styleName="menu" width="100%"
+				 rollOver="menu_rollOverHandler(event)">
+			<mx:VRule height="50" width="1"/>
+			<s:VGroup>
+				<s:Label text="Share Map" styleName="MenuTitle"/>
+				<s:Label id="menu1Preview" text="{menu1Items.getItemAt(0).name}" styleName="subMenuPreview"
+						 showEffect="fadeIn" hideEffect="fadeOutSlow"/>
+			</s:VGroup>
+		</mx:HBox>
+		<mx:Spacer width="30"/>
+		<mx:HBox name="menu2Items" styleName="menu" width="100%"
+				 rollOver="menu_rollOverHandler(event)">
+			<mx:VRule height="50" width="1"/>
+			<s:VGroup>
+				<s:Label text="Navigate" styleName="MenuTitle"/>
+				<s:Label text="> Export to Excel" styleName="subMenuPreview"/>
+			</s:VGroup>
+		</mx:HBox>
+		<mx:Spacer width="30"/>
+		<mx:HBox name="menu3Items" styleName="menu" width="100%"
+				 rollOver="menu_rollOverHandler(event)">
+			<mx:VRule height="50" width="1"/>
+			<s:VGroup>
+				<s:Label text="Tools" styleName="MenuTitle"/>
+				<s:Label text="> Export to Excel" styleName="subMenuPreview"/>
+			</s:VGroup>
+		</mx:HBox>
+		<mx:Spacer width="30"/>
+		<mx:HBox name="menu4Items" styleName="menu" width="100%"
+				 rollOver="menu_rollOverHandler(event)">
+			<mx:VRule height="50" width="1"/>
+			<s:VGroup>
+				<s:Label text="Send Map" styleName="MenuTitle"/>
+				<s:Label text="> Export to Excel" styleName="subMenuPreview"/>
+			</s:VGroup>
+		</mx:HBox>
+		<mx:Spacer width="100%"/>
+	</mx:HBox>
+	<!--Menu Pane-->
+	<mx:VBox id="menuPane" y="3000" backgroundAlpha="0" backgroundColor="#ffffff"
+			 rollOut="menu_rollOutHandler(event)" width="225"
+			 visible="false">
+		<mx:VBox backgroundAlpha=".75" backgroundColor="#ffffff"
+				 paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10"
+				 dropShadowVisible="true">
+			<s:DataGroup id="menuData" dataProvider="{menu1Items}" updateComplete="setYpostion();">
+				<s:layout>
+					<s:VerticalLayout gap="0" useVirtualLayout="true"/>
+				</s:layout>
+				<s:itemRenderer>
+					<fx:Component>
+						<s:ItemRenderer autoDrawBackground="false">
+							<s:states>
+								<s:State name="normal" />
+								<s:State name="hovered" />
+							</s:states>
+							
+							<fx:Script>
+								<![CDATA[
+									override public function set data(value:Object):void {
+										super.data = value;
+										
+										if (data == null) // a renderer's data is set to null when it goes out of view
+											return;
+										
+										subMenuItemName.text = data.name;
+										subMenuItemDescription.text = data.description;
+										subMenuItemIcon.source = 'images/' + data.icon;
+									}
+								]]>
+							</fx:Script>
+							<s:transitions>
+								
+								<mx:Transition fromState="normal" toState="hovered">
+									<s:Animate target="{subMenuItemIcon}" duration="200">
+										<s:SimpleMotionPath property="width" />
+									</s:Animate>
+								</mx:Transition>
+								<mx:Transition fromState="hovered" toState="normal">
+									<s:Animate target="{subMenuItemIcon}" duration="200" >
+										<s:SimpleMotionPath property="width" />
+									</s:Animate>
+								</mx:Transition>
+							</s:transitions>
+							
+							<mx:HBox id="item" verticalAlign="middle" width="200" height="75" backgroundColor="red" backgroundAlpha="0"
+									 useHandCursor="true" buttonMode="true" mouseChildren='false'>
+								<mx:Image id="subMenuItemIcon" width="26" width.hovered="52"/>
+								<s:VGroup width="100%">
+									<s:Label id="subMenuItemName" color="#000000" fontSize="12" fontSize.hovered="18" fontFamily="Georgia"/>
+									<s:Label width="120" id="subMenuItemDescription" color="#333333" fontSize="10" alpha="0" alpha.hovered="1"/>
+								</s:VGroup>
+							</mx:HBox>
+						</s:ItemRenderer>
+					</fx:Component>
+				</s:itemRenderer>
+			</s:DataGroup>
+		</mx:VBox>
+		<mx:HBox height="{menu1.height}" width="100%"/>
+	</mx:VBox>
+</s:Group>

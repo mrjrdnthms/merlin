@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="250" height="40"
+		  currentState="state2">
+	
+	<fx:Script>        
+		<![CDATA[
+			import org.AppEvent;
+			import mx.core.FlexGlobals;
+
+			protected function view_hover(event:MouseEvent):void
+			{
+				backgroundRectHover.visible=true;
+				moveHover.xTo = event.target.x-5;
+				moveHover.play([backgroundRectHover]);
+				resizeHover.widthTo = event.target.width+10;
+				resizeHover.play([backgroundRectHover]);
+			}
+
+
+			protected function mouseOutHandler(event:MouseEvent):void
+			{
+				backgroundRectHover.visible=false;
+			}
+			
+			protected function view_clickHandler(view:String):void{
+				FlexGlobals.topLevelApplication.dispatchEvent(new AppEvent(AppEvent.SWITCH_STATE,false,false,view));
+			}
+
+		]]>
+	</fx:Script>
+	
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:Move id="moveHover" duration="100"/>
+		<s:Resize id="resizeHover" duration="100"/>
+	</fx:Declarations>
+	<s:states>
+		<s:State name="state1"/>
+		<s:State name="state2"/>
+		<s:State name="state3"/>
+		<s:State name="state4"/>
+	</s:states> 
+	
+	<!-- Define the transition to animate the change of view state. -->
+	<s:transitions>
+		<mx:Transition toState="state1">
+			<s:Animate target="{backgroundRect}" duration="200">
+				<s:SimpleMotionPath property="x" />
+			</s:Animate>
+		</mx:Transition>
+		<mx:Transition toState="state2">
+			<s:Animate target="{backgroundRect}" duration="200">
+				<s:SimpleMotionPath property="x" />
+			</s:Animate>
+		</mx:Transition>
+		<mx:Transition toState="state3">
+			<s:Animate target="{backgroundRect}" duration="200">
+				<s:SimpleMotionPath property="x" />
+			</s:Animate>
+		</mx:Transition>
+		<mx:Transition toState="state4">
+			<s:Animate target="{backgroundRect}" duration="200">
+				<s:SimpleMotionPath property="x" />
+			</s:Animate>
+		</mx:Transition>
+	</s:transitions>
+	
+	<mx:HBox width="100%" height="100%"
+			 backgroundAlpha="0" backgroundColor="red"
+			 mouseOut="mouseOutHandler(event)"/>
+	
+	<s:Rect id="backgroundRect" height="100%" 
+			width.state1="{view1.width+10}" x.state1="{view1.x-5}"
+			width.state2="{view2.width+10}" x.state2="{view2.x-5}"
+			width.state3="{view3.width+10}" x.state3="{view3.x-5}"
+			width.state4="{view4.width+10}" x.state4="{view4.x-5}"
+			alpha=".5" radiusX="7" radiusY="7">
+		<s:fill>
+			<s:LinearGradient rotation="90">
+				<s:GradientEntry color="#7a90c8" />
+				<s:GradientEntry color="#02509d" />
+			</s:LinearGradient>
+			
+		</s:fill>
+	</s:Rect>
+	<s:Rect id="backgroundRectHover" height="100%" alpha=".2" 
+			width.state1="{view1.width+10}" x.state1="{view1.x-5}"
+			width.state2="{view2.width+10}" x.state2="{view2.x-5}"
+			width.state3="{view3.width+10}" x.state3="{view3.x-5}"
+			width.state4="{view4.width+10}" x.state4="{view4.x-5}"
+			radiusX="7" radiusY="7">
+		<s:fill>
+			<s:LinearGradient rotation="90">
+				<s:GradientEntry color="#7a90c8" />
+				<s:GradientEntry color="#02509d" />
+			</s:LinearGradient>
+			
+		</s:fill>
+	</s:Rect>
+	<s:HGroup width="100%" height="100%"
+			  verticalAlign="middle" horizontalAlign="center" gap="20">
+		<s:Label id="view1" text="Data" styleName="viewSwitchTitle"
+				 color.state1="#ffffff"
+				 useHandCursor="true" buttonMode="true" mouseChildren='false'
+				 mouseOver="view_hover(event)"
+				 click="this.currentState='state1';view_clickHandler('Data');"/>
+		<s:Label id="view2" text="Map" styleName="viewSwitchTitle"
+				 color.state2="#ffffff"
+				 useHandCursor="true" buttonMode="true" mouseChildren='false'
+				 mouseOver="view_hover(event)"
+				 click="this.currentState='state2';view_clickHandler('Map');"/>
+		<s:Label id="view3" text="Settings" styleName="viewSwitchTitle"
+				 color.state3="#ffffff"
+				 useHandCursor="true" buttonMode="true" mouseChildren='false'
+				 mouseOver="view_hover(event)"
+				 click="this.currentState='state3';view_clickHandler('Settings');"/>
+		<s:Label id="view4" text="Help" styleName="viewSwitchTitle"
+				 color.state4="#ffffff"
+				 useHandCursor="true" buttonMode="true" mouseChildren='false'
+				 mouseOver="view_hover(event)"
+				 click="this.currentState='state4';view_clickHandler('Help');"/>
+	</s:HGroup>
+</s:Group>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx			="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s			="library://ns.adobe.com/flex/spark" 
+			   xmlns:esri		="http://www.esri.com/2008/ags"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:CustomColorPickerComponent="uk.co.BetaDesigns.components.CustomColorPickerComponent.*"
+			   minWidth="955" minHeight="600" xmlns:local="*" creationComplete="init()" currentState="Map">
+	<fx:Style source="style.css"/>
+	<fx:Script>        
+		<![CDATA[
+			import flashx.textLayout.formats.BackgroundColor;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.ArrayList;
+			import mx.collections.IList;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import VersionControl.VersionController;
+			
+			import org.AppEvent;
+			
+			public var tools:ArrayCollection = new ArrayCollection();
+			private var subMenuPreviewTimer:Timer = new Timer(2000);
+			
+			private function init():void{
+				VersionController.getInstance( this );
+				this.addEventListener(AppEvent.SWITCH_STATE,switchState);
+			}
+			
+			protected function switchState(event:AppEvent):void{
+				this.currentState=event.data.toString();
+			}
+			
+			private function hideHUD():void{
+				HUD.visible=false;
+				FlexGlobals.topLevelApplication.dispatchEvent(new AppEvent(AppEvent.HIDEHUD,false,false,null));
+			}
+
+			
+
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<mx:Fade id="fadeOut" alphaTo="0" duration="200"/>
+		<mx:Fade id="fadeIn" alphaTo="1" duration="200"/>
+		<mx:Fade id="fadeOutSlow" alphaTo="0" duration="2000"/>
+		
+	</fx:Declarations>
+	<s:states> 
+		<s:State name="Map"/>    
+		<s:State name="Data"/>
+		<s:State name="Settings"/>    
+		<s:State name="Help"/>
+	</s:states> 
+	
+	<!-- Define the transition to animate the change of view state. -->
+	<s:transitions>
+		<mx:Transition fromState="Data" toState="Map">
+			<s:Parallel>
+				<s:Animate target="{dataListGroup}" duration="200">
+					<s:SimpleMotionPath property="x" valueTo="{-this.width}" valueFrom="0"/>
+				</s:Animate>
+				<s:Animate target="{mapGroup}" duration="200">
+					<s:SimpleMotionPath property="x" valueTo="0" valueFrom="{this.width}"/>
+				</s:Animate>
+			</s:Parallel>
+		</mx:Transition>
+		<mx:Transition toState="Data" fromState="Map">
+			<s:Parallel>
+				<s:Animate target="{dataListGroup}" duration="200">
+					<s:SimpleMotionPath property="x" valueTo="0" valueFrom="{-this.width}"/>
+				</s:Animate>
+				<s:Animate target="{mapGroup}" duration="200">
+					<s:SimpleMotionPath property="x" valueTo="{this.width}" valueFrom="0"/>
+				</s:Animate>
+			</s:Parallel>
+		</mx:Transition>
+	</s:transitions>
+	
+	<local:map id="mapGroup" width="100%" height="100%"/> 
+	<local:dataList id="dataListGroup" x="{-this.width}" width="100%" height="100%" />
+	<local:help id="helpGroup" includeIn="Help" width="100%" height="100%"/>
+	<local:settings id="settingsGroup" includeIn="Settings" width="100%" height="100%" />
+	
+	
+	
+	<!--HUD TRIGGERS-->
+	<s:VGroup id="HUDTriggers" width="100%" height="100%" gap="0">
+		<mx:HBox id="HUDTriggerUpper" width="100%" height="75" visible="{!HUD.visible}"
+				 mouseOver="HUD.visible=true" backgroundColor="red" backgroundAlpha="0"/>
+		<mx:HBox id="HUDTriggerMiddle" width="100%" height="100%" visible="{HUD.visible}"
+				 mouseOver="hideHUD()" backgroundColor="green" backgroundAlpha="0"/>
+		<mx:HBox id="HUDTriggerLower"
+				 width="100%" height="75" visible="{!HUD.visible}"
+				 mouseOver="HUD.visible=true" backgroundColor="blue" backgroundAlpha="0"/>
+	</s:VGroup>
+	
+	<!--HUD-->
+	<local:hud id="HUD" hideEffect="fadeOut" showEffect="fadeIn"
+			 visible="false" width="100%" height="{HUDTriggers.height}"
+			 show="FlexGlobals.topLevelApplication.dispatchEvent(new AppEvent(AppEvent.SHOWHUD,false,false,null));"/>
+	
+</s:Application>
