@@ -3,7 +3,6 @@
 			   xmlns:s			="library://ns.adobe.com/flex/spark" 
 			   xmlns:esri		="http://www.esri.com/2008/ags"
 			   xmlns:mx="library://ns.adobe.com/flex/mx"
-			   xmlns:CustomColorPickerComponent="uk.co.BetaDesigns.components.CustomColorPickerComponent.*"
 			   minWidth="955" minHeight="600" xmlns:local="*" creationComplete="init()" currentState="Map">
 	<fx:Style source="style.css"/>
 	<fx:Script>        
@@ -15,7 +14,6 @@
 			import mx.collections.IList;
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
-			import VersionControl.VersionController;
 			
 			import org.AppEvent;
 			
@@ -23,7 +21,6 @@
 			private var subMenuPreviewTimer:Timer = new Timer(2000);
 			
 			private function init():void{
-				VersionController.getInstance( this );
 				this.addEventListener(AppEvent.SWITCH_STATE,switchState);
 			}
 			

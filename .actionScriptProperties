@@ -14,7 +14,6 @@
   </compiler>
   <applications>
     <application path="Mockup.mxml"/>
-    <application path="VersionControl/VersionController.as"/>
   </applications>
   <modules/>
   <buildCSSFiles/>

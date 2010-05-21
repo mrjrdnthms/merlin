@@ -6,6 +6,8 @@
 	
 	<fx:Script>        
 		<![CDATA[
+			import itemRenderers.BaseMapItemRenderer;
+			
 			import mx.collections.ArrayCollection;
 			[Bindable]
 			private var baseMaps:ArrayCollection = new ArrayCollection([
@@ -36,7 +38,7 @@
 				
 			}
 			
-			private var hidePopupTimer:Timer = new Timer(300);
+			private var hidePopupTimer:Timer = new Timer(200);
 			private var popupActive:Boolean = false;
 			private var popupTriggerActive:Boolean = false;
 			protected function hidePopup():void{
@@ -59,6 +61,7 @@
 			<s:GradientEntry color="0xFFFFFF" />
 			<s:GradientEntry color="0x336699" />
 		</s:LinearGradient>
+		
 	</fx:Declarations>
 	<s:states> 
 		<s:State name="closed"/>    
@@ -151,82 +154,22 @@
 			<mx:HRule width="100%" height="1" top="5"/>
 			<s:PopUpAnchor id="baseMapPopup" left="-10" top="0" height="100%" width="100%" popUpPosition="left"  
 						   displayPopUp="false">
-				<s:BorderContainer cornerRadius="5" height="370" width="210"
-								   dropShadowVisible="true" rollOver="popupActive=true" rollOut="popupActive=false;hidePopup();">
-					<s:VGroup width="200" height="350"
+				<s:BorderContainer cornerRadius="5" width="100%"
+								   dropShadowVisible="true"
+								   rollOver="popupActive=true" rollOut="popupActive=false;hidePopup();">
+					<s:VGroup width="100%"
 							  paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
 						<s:Label text="Choose Base Map"/>
 						<mx:HRule width="100%" height="1" top="5"/>
-						<s:DataGroup id="baseMapList" dataProvider="{baseMaps}">
-							<s:layout>
-								<s:VerticalLayout useVirtualLayout="true" gap="10"/>
-							</s:layout>
-							<s:itemRenderer>
-								<fx:Component>
-									<s:ItemRenderer autoDrawBackground="false">
-										<s:states>
-											<s:State name="normal" />
-											<s:State name="hovered" />
-										</s:states>
-										
-										<fx:Script>
-											<![CDATA[
-												override public function set data(value:Object):void {
-													super.data = value;
-													
-													if (data == null) // a renderer's data is set to null when it goes out of view
-														return;
-													
-													subMenuItemName.text = data.name;
-													subMenuItemDescription.text = data.description;
-													baseMapIcon.source = 'images/legend/' + data.icon;
-													if(data.name=='Street Map'){
-														iconBorder.setStyle('borderColor','#ff9a15');
-														iconBorder.setStyle('borderWeight',2);
-														iconBorder.width=68;
-														iconBorder.height=68;
-														baseMapIcon.x=0;
-														baseMapIcon.y=0;
-														subMenuItemName.setStyle('color','#ff9a15');
-														subMenuItemName.setStyle('fontWeight','bold');
-														subMenuItemDescription.setStyle('color','#ff9a15');
-													}
-												}
-												
-												protected function toggleDetailedView(showDetailed:Boolean):void
-												{
-													if(showDetailed){
-														this.currentState='detailed'
-													}
-													else{
-														this.currentState='open'
-													}
-													
-												}
-											]]>
-										</fx:Script>
-										
-										<mx:HBox id="item" verticalAlign="middle" width="100%" height="100%"
-												 useHandCursor="true" buttonMode="true" mouseChildren='false'
-												 backgroundAlpha="0" backgroundColor="blue"
-												 rollOver="item.setStyle('backgroundAlpha',.15);toggleDetailedView(true);"
-												 rollOut="item.setStyle('backgroundAlpha',0);toggleDetailedView(false);">
-											<s:BorderContainer id="iconBorder" width="66" height="66">
-												<mx:Image id="baseMapIcon"/>
-											</s:BorderContainer>
-											<s:VGroup  width="100%">
-												<s:Label id="subMenuItemName" color="#000000" fontSize="12" fontFamily="Georgia"/>
-												<s:Label width="120" id="subMenuItemDescription" color="#333333" fontSize="10"/>
-											</s:VGroup>
-										</mx:HBox>
-									</s:ItemRenderer>
-								</fx:Component>
-							</s:itemRenderer>
-						</s:DataGroup>
+						<s:List id="baseMapList" width="100%" 
+								itemRenderer="itemRenderers.BaseMapItemRenderer" 
+								dataProvider="{baseMaps}" selectionColor="#ffffff"
+								borderAlpha="1" click="popupActive=false;hidePopup();">
+						</s:List>
 						<mx:HRule width="100%" height="1"/>
 						<s:HGroup verticalAlign="middle">
 							<s:CheckBox/>
-							<s:Label text="Alawys show street Labels"/>
+							<s:Label text="Always show street Labels"/>
 						</s:HGroup>
 					</s:VGroup>
 					<mx:Image source="images/leftPopoutArrow.png" right="-10" y="10" id="subMenuItemIcon"/>
@@ -240,7 +183,7 @@
 			</mx:HBox>
 			<mx:HRule width="100%" height="1" bottom="5"/>
 		</s:Group>
-		<s:DataGroup id="menuData" dataProvider="{layers}" visible.closed="false" includeInLayout.closed="false">
+		<s:DataGroup id="menuData" dataProvider="{layers}" visible.closed="false" includeInLayout.closed="false" >
 			<s:layout>
 				<s:VerticalLayout gap="0" useVirtualLayout="true"/>
 			</s:layout>
